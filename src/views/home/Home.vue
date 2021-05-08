@@ -12,6 +12,14 @@
       </template>
     </nav-bar>
 
+    <tab-control
+      :titles="['流行', '新款', '精选']"
+      @tabClick="tabClick"
+      ref="tabControl1"
+      class="tab-control"
+      v-show="isTabFixed"
+    />
+
     <scroll
       class="content"
       ref="scroll"
@@ -21,13 +29,16 @@
       @pullingUp="loadMore"
     >
       <template v-slot:scroll>
-        <home-swiper :banners="banners"></home-swiper>
+        <home-swiper
+          :banners="banners"
+          @swiperImageLoad="swiperImageLoad"
+        ></home-swiper>
         <recommend-view :recommends="recommends" />
         <feature-view></feature-view>
         <tab-control
           :titles="['流行', '新款', '精选']"
-          class="tab-control"
           @tabClick="tabClick"
+          ref="tabControl2"
         />
         <goods-list :goods="showgoods" />
       </template>
@@ -72,7 +83,9 @@ export default {
         'sell': {page: 0, list: []},
       },
       currentType: 'pop',
-      isShowBackTop: false
+      isShowBackTop: false,
+      isTabFixed: false,
+      saveY: 0
     }
   },
   computed: {
@@ -83,14 +96,43 @@ export default {
 
   // 组件创建完就执行函数
   created() {
-    // 请求主页的多个数据
+    // 1.请求主页的多个数据
     this.getHomeMultidata()
-    // 请求商品数据
+    // 2.请求商品数据
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
+  mounted() {
+    // 3.监听refresh，保证图片加载完成。（事件总线不需要从组件上做接收）
+    const refresh = this.debounce(this.$refs.scroll.refresh,50)
+    this.$bus.$on('itemImageLoad', () => {
+      // this.$refs.scroll.scroll.refresh()
+      refresh()
+    })
+  },
+  activated() {
+    this.$refs.scroll.refresh()
+    this.$refs.scroll.scrollTo(0, this.saveY)
+    // 保存到指定位置后，进行一次刷新
+  },
+  // 离开组件时调用，保存离开时滑动的位置信息
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y
+    console.log(this.saveY);
+  },
   methods: {
+    // 上拉加载图片防抖
+    debounce (func, delay){
+      let timer = null
+      return function(...args) {
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          func.apply(this, args)
+        }, delay);
+      }
+    },
+
     // 事件监听的方法
     tabClick (index) {
       switch (index) {
@@ -104,19 +146,33 @@ export default {
           this.currentType = 'sell'
           break;
       }
+      this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index;
     },
+
+    // 通过ref调用scroll组件的方法，返回到指定的位置
     backClick() {
-      // 通过ref调用scroll组件的方法，返回到指定的位置
       this.$refs.scroll.scrollTo(0,0)
     },
+
     backtopClick(position){
-      // 根据滑动距离判断是否出现回到顶部
-      this.isShowBackTop = -(position.y) > 1400
+      // 1.根据滑动距离判断是否出现回到顶部
+      this.isShowBackTop = -(position.y) > 1200
+      // 2.决定tabControl是否吸顶 position:fixed
+      this.isTabFixed = (-position.y) > this.taboffsetTop
     },
+
     // 上拉加载更多
     loadMore() {
       this.getHomeGoods(this.currentType)
     },
+
+    // 接收轮播图图片加载完成的事件，计算滚动的y轴距离
+    swiperImageLoad () {
+      this.taboffsetTop = this.$refs.tabControl2.$el.offsetTop
+      console.log(this.$refs.tabControl2.$el.offsetTop);
+    },
+
     // 网络请求相关的方法
     getHomeMultidata() {
       getHomeMultidata().then(res => {
@@ -132,11 +188,10 @@ export default {
       getHomeGoods(type,page).then( res=> {
         this.goods[type].list.push(...res.data.list)
         // 修正goods里的page数据，与请求结果保持一致。
-        this.goods[type].page = this.goods[type].page + 1
-        // this.$refs.scroll 获取
-        this.$refs.scroll.scroll.finishPullUp()
-        // 作用：重新计算 better-scroll，当 DOM 结构发生变化的时候务必要调用确保滚动的效果正常。
-        this.$refs.scroll.scroll.refresh()
+        this.goods[type].page += 1
+
+        // this.$refs.scroll 获取子组件scroll
+        this.$refs.scroll.finishPullUp()
       })
     }
   },
@@ -153,26 +208,26 @@ export default {
     background-color: @color-tint;
     color: @color-background;
 
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9;
-  }
-  .tab-control {
-    // 使用bs改变原生属性，失效
-    position: sticky;
-    top: 44px;
-    z-index: 19;
+    // position: fixed;
+    // top: 0;
+    // left: 0;
+    // right: 0;
+    // z-index: 9;
   }
   .content {
-    // overflow: hidden;
+    // 往下拖动时，内容往上滚，不会盖过home-nav
+    overflow: hidden;
 
     position: absolute;
     top: 44px;
     bottom: 49px;
     left: 0;
     right: 0;
+  }
+  .tab-control {
+    // 没有必要用fixed，这里的位置相对自身当前位置
+    position: relative;
+    z-index: 9;
   }
 }
 </style>

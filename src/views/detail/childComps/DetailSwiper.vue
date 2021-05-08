@@ -1,10 +1,13 @@
 <template>
-  <div class="swiper-wrap">
-    <swiper ref="mySwiper" :options="swiperOptions" v-if="showSwiper">
-      <swiper-slide v-for="(item, id) in banners" :key="id">
-        <a :href="item.link"
-          ><img class="swiper-img" :src="item.image" @load="imageLoad"
-        /></a>
+  <div class="wrapper">
+    <swiper
+      ref="mySwiper"
+      :options="swiperOptions"
+      v-if="showSwiper"
+      class="swiper-wrapper"
+    >
+      <swiper-slide v-for="(item, id) in topImages" :key="id">
+        <img class="swiper-img" :src="item" />
       </swiper-slide>
       <div class="swiper-pagination" slot="pagination"></div>
     </swiper>
@@ -13,9 +16,9 @@
 
 <script type="text/ecmascript-6">
 export default {
-  name: 'HomeSwiper',
+  name: 'DetailSwiper',
   props: {
-    banners: {
+    topImages: {
       type: Array,
       default() {
         return []
@@ -43,25 +46,24 @@ export default {
   },
   computed: {
     showSwiper() {
-      return this.banners.length
+      return this.topImages.length
     }
   },
   methods: {
-    // @load事件 监听轮播图图片是否加载完成。才能计算出tabcontrol与滚动的位置比较
-    imageLoad () {
-      if (!this.isLoad) {
-        this.$emit('swiperImageLoad')
-        // 没必要用防抖，这里只要确认一次就可以
-        this.isLoad = true
-      }
+    // @load事件 监听轮播图图片是否加载完成。
+    topImagesLoad () {
+      this.isLoad = true
     }
   },
 }
 </script>
 
 <style lang="less" scoped>
-.swiper-img {
-  width: 100%;
-  height: 190px;
+.swiper-wrapper {
+  height: 300px;
+  overflow: hidden;
+  .swiper-img {
+    width: 100%;
+  }
 }
 </style>

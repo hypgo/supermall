@@ -1,6 +1,11 @@
 <template>
   <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="" />
+    <img
+      :src="goodsItem.show.img"
+      alt=""
+      @load="imageLoad"
+      @click="itemClick"
+    />
     <div class="goods-info">
       <p>{{ goodsItem.title }}</p>
       <span class="price">{{ goodsItem.price }}</span>
@@ -19,7 +24,17 @@ export default {
         return {}
       }
     }
-  }
+  },
+  methods: {
+    // 事件总线监听refresh
+    imageLoad(){
+      this.$bus.$emit('itemImageLoad')
+    },
+    itemClick () {
+      // 这个params用法不能用 逗号,连接2
+      this.$router.push('/detail/' + this.goodsItem.iid)
+    }
+  },
 }
 </script>
 

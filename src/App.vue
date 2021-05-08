@@ -1,6 +1,8 @@
 <template>
   <div class="app">
-    <router-view></router-view>
+    <keep-alive exclude="Detail">
+      <router-view />
+    </keep-alive>
     <!-- <router-view>等同于router-link to= 前者是需要指定路由地址，后者不需要指定，所有路由都跳转 -->
     <main-tab-bar></main-tab-bar>
   </div>
