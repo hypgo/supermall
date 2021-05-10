@@ -1,38 +1,37 @@
 <template>
-  <div>
-    <div class="shop-info">
-      <div class="logo">
-        <img :src="shop.shopLogo" alt="" />
-        <div class="shop-name">{{ shop.name }}</div>
-      </div>
-      <div class="shop-other">
-        <div class="shop-other-left">
-          <div class="shop-goods-amount">
-            <span class="total-sale">{{ shop.cSells }}</span>
-            <div class="total-sale-name">总销量</div>
-          </div>
-          <div class="shop-all-good">
-            <span class="all-good">{{ shop.cGoods }}</span>
-            <div class="all-good-name">全部宝贝</div>
-          </div>
+  <div class="detail-shop-info" v-if="Object.keys(shop) !== 0">
+    <div class="flex shop-name-info">
+      <img :src="shop.shopLogo" alt="" />
+      <div>{{ shop.name }}</div>
+    </div>
+    <div class="flex shop-other-info">
+      <div class="flex shop-other-item shop-other-sell">
+        <div>
+          <p class="fs16">{{ shop.cSells }}</p>
+          <p>总销量</p>
         </div>
-        <div
-          class="shop-evaluation"
-          v-for="item in shop.score"
-          :key="item.index"
-        >
-          <div class="shop-evaluation-item">
-            <span class="name">{{ item.name }}</span>
-            <span class="score">{{ item.score }}</span>
-            <span class="is-better">{{ item.isBetter }}</span>
-          </div>
+        <div>
+          <p class="fs16">{{ shop.cGoods }}</p>
+          <p>全部宝贝</p>
+        </div>
+      </div>
+      <div class="shop-other-item shop-other-right">
+        <div v-for="item in shop.score" :key="item.index">
+          {{ item.name }} &ensp;
+          <span class="score" :class="{ isColor: item.isBetter }">{{
+            item.score
+          }}</span>
+          <span class="scoreBg" :class="{ active: item.isBetter }">{{
+            item.isBetter ? "高" : "低"
+          }}</span>
         </div>
       </div>
     </div>
-    <div class="enter-shop">
-      <a :href="shop.shopUrl">进店逛逛</a>
+    <div class="enter-shop-wrap">
+      <a :href="shop.shopUrl">
+        <div class="enter-shop">进店逛逛</div>
+      </a>
     </div>
-    <div class="h"></div>
   </div>
 </template>
 
@@ -46,58 +45,79 @@ export default {
         return {}
       }
     }
-  }
+  },
+  data() {
+    return {
+    }
+  },
 }
 </script>
 
 <style lang="less" scoped>
-.shop-info {
-  padding: 5px 5px;
-  .logo {
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-    img {
-      height: 30px;
-      border-radius: 50px;
-      border: 1px solid #eee;
-    }
-    .shop-name {
-      margin-left: 10px;
-      font-size: 14px;
-    }
-  }
-  .shop-other {
-    width: 100%;
-    padding: 5px 15px;
-    display: flex;
-    .shop-other-left {
-      display: flex;
-      align-items: center;
-      width: 50%;
-      text-align: center;
-      border-right: 2px solid #eee;
-      .total-sale-name,
-      .all-good-name {
-        font-size: 12px;
-        margin-top: 2px;
-      }
-      .shop-all-good {
-        margin: 0 15px;
-      }
-    }
-    .shop-evaluation {
-    }
-  }
-  // .shop-evaluation {
-  //   .shop-evaluation-item {
-  //     display: flex;
-  //     flex-direction: row;
-  //   }
-  // }
+@import "../../../assets/css/base.less";
+.fs16 {
+  font-size: 14px;
 }
-
-.h {
-  height: 500px;
+.shop-name-info {
+  align-items: center;
+  margin: 20px 10px;
+  img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    margin-right: 10px;
+    border: 1px solid #eee;
+    vertical-align: middle;
+  }
+}
+.shop-other-info {
+  font-size: 12px;
+  align-items: center;
+  line-height: 20px;
+  .shop-other-item {
+    flex: 1;
+  }
+  .shop-other-sell {
+    border-right: 1px solid #ececec;
+    div {
+      flex: 1;
+      text-align: center;
+    }
+  }
+  .shop-other-right {
+    // padding: 0 10px;
+    text-align: center;
+    font-size: 12px;
+    .score {
+      // 因为分数是span，需要变为行内块设置宽高
+      display: inline-block;
+      margin: 1px 0;
+      width: 30px;
+      padding: 0 3px;
+      color: #006666;
+      &.isColor {
+        color: @color-high-text;
+      }
+    }
+    .scoreBg {
+      color: #fff;
+      background-color: #006666;
+      &.active {
+        background-color: red;
+      }
+    }
+  }
+}
+.enter-shop-wrap {
+  text-align: center;
+  font-size: 12;
+  .enter-shop {
+    display: inline-block;
+    margin: 10px 0;
+    padding: 4px 30px;
+    line-height: 25px;
+    background-color: #f2f2f2;
+    border-radius: 100px;
+  }
 }
 </style>

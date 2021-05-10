@@ -214,6 +214,7 @@ export default {
     // right: 0;
     // z-index: 9;
   }
+  // content must has height,
   .content {
     // 往下拖动时，内容往上滚，不会盖过home-nav
     overflow: hidden;
