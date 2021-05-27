@@ -1,5 +1,5 @@
 <template>
-  <div class="detail-shop-info" v-if="Object.keys(shop) !== 0">
+  <div class="detail-shop-info" v-if="Object.keys(shop).length !== 0">
     <div class="flex shop-name-info">
       <img :src="shop.shopLogo" alt="" />
       <div>{{ shop.name }}</div>
@@ -45,11 +45,7 @@ export default {
         return {}
       }
     }
-  },
-  data() {
-    return {
-    }
-  },
+  }
 }
 </script>
 

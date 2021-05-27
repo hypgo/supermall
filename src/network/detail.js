@@ -10,6 +10,12 @@ export function getDetailData(iid) {
   });
 }
 
+export function getRecommend() {
+  return request({
+    url: "/recommend",
+  });
+}
+
 // ES6定义class的方法，构造函数 new
 export class Goods {
   // constructor()
@@ -32,5 +38,14 @@ export class Shop {
     this.fans = shopInfo.cFans;
     this.score = shopInfo.score;
     this.goodsCount = shopInfo.cGoods;
+  }
+}
+
+export class GoodsParam {
+  constructor(info, rule) {
+    // Not sure if some goods have pictures
+    this.images = info.images ? info.images[0] : "";
+    this.infos = info.set;
+    this.rule = rule.tables;
   }
 }

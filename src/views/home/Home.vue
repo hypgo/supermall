@@ -106,7 +106,7 @@ export default {
   mounted() {
     // 3.监听refresh，保证图片加载完成。（事件总线不需要从组件上做接收）
     const refresh = this.debounce(this.$refs.scroll.refresh,50)
-    this.$bus.$on('itemImageLoad', () => {
+    this.$bus.$on('homeItemImageLoad', () => {
       // this.$refs.scroll.scroll.refresh()
       refresh()
     })
@@ -218,7 +218,6 @@ export default {
   .content {
     // 往下拖动时，内容往上滚，不会盖过home-nav
     overflow: hidden;
-
     position: absolute;
     top: 44px;
     bottom: 49px;

@@ -8,7 +8,7 @@
       v-for="(item, i) in detailInfo.detailImage[0].list"
       :key="i"
     >
-      <img class="goods-item" :src="item" alt="" />
+      <img class="goods-item" :src="item" @load="imgLoad" />
     </div>
   </div>
 </template>
@@ -20,11 +20,29 @@ export default {
     detailInfo: {
       type: Object
     }
-  }
+  },
+  data() {
+    return {
+      counter: 0,
+      imgLength: 0
+    }
+  },
+  methods: {
+    imgLoad() {
+      if (++this.counter == this.imgLength) {
+        this.$emit('detailImagesLoad')
+      }
+    }
+  },
+  watch: {
+    detailInfo() {
+      this.imgLength = this.detailInfo.detailImage[0].list.length
+    }
+  },
 }
 
 // 所有图片都要加载完成，不然会影响滚动的高度。
-// 要监听图片加载，判断当所有图片加载完，进行一次回调就可以了。传回给detail，做一次调用刷新
+// 要监听图片加载，在小组件里判断当所有图片加载完，进行一次回调就可以了。传回给detail，做一次调用刷新
 // ++counter（counter += 1）  === 图片的长度
 // 监听属性的变化，获得图片的长度，不必每次都调用获取
 </script>
