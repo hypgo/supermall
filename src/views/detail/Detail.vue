@@ -180,7 +180,7 @@ export default {
       product.price = this.goods.realPrice;
       product.iid = this.iid;
 
-      // 2.将商品添加到购物车里 store 为什么通过commit传?
+      // 2.将商品添加到购物车里 store dispatch ?  在vuex里面使用promise
       this.$store.dispatch('addCart', product)
     }
   },

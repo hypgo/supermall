@@ -40,6 +40,14 @@ export default new Vuex.Store({
       payload.checked = false;
       state.cartList.push(payload);
     },
+    // 选中/取消商品
+    checkClick(state,payload){
+      payload.checked = !payload.checked
+    },
+    // 
+    selectAllToItem(state,payload) {
+      payload.checked = true
+    }
   },
   // 异步操作和有判断逻辑的都放在actions
   actions: {
